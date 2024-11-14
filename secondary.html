@@ -15,19 +15,24 @@
         <div class="navbar-brand">Reaper <span>Squad</span></div>
         <div class="navbar-links">
             <a href="index.html">Home</a>
-            <a href="training.html">Training</a>
+            <a href="discord.html">Discord</a>
         </div>
     </nav>
     
+    <!-- Options section -->
     <main class="training">
-        <h1>Secondary Training Info</h1>
-        <p></p>
+        <h1 style="text-align: center;">Secondary Training Info</h1>
+        <div id="options-container" class="options-container" style="background-color: rgba(0, 0, 0, 0.5); padding: 20px; border-radius: 10px; text-align: center;">
+            <h2>Select an Option</h2>
+            <button id="openPdf">Open PDF</button>
+            <!-- Add more options here if needed -->
+        </div>
 
         <!-- PDF container -->
-        <div id="pdf-container"></div>
+        <div id="pdf-container" style="display: none;"></div>  <!-- Initially hidden -->
 
         <!-- Navigation buttons -->
-        <div id="pdf-nav">
+        <div id="pdf-nav" style="display: none;">  <!-- Initially hidden -->
             <button id="prevPage">Previous</button>
             <button id="nextPage">Next</button>
         </div>
@@ -38,20 +43,34 @@
         let pdfDoc = null;  // Will hold the loaded PDF document
         let currentPage = 1;  // Current page number
         let totalPages = 0;  // Total pages in the PDF
+        const defaultScale = 1.0;  // Default zoom level
 
-        // Initialize PDF.js
-        const loadingTask = pdfjsLib.getDocument(url);
-        loadingTask.promise.then(pdf => {
-            pdfDoc = pdf;
-            totalPages = pdf.numPages;
-            console.log('PDF loaded');
-            renderPage(currentPage);  // Render the first page
+        // Function to open the PDF
+        document.getElementById('openPdf').addEventListener('click', () => {
+            // Hide options container
+            document.getElementById('options-container').style.display = 'none';
+            
+            // Show PDF container and navigation buttons
+            document.getElementById('pdf-container').style.display = 'block';
+            document.getElementById('pdf-nav').style.display = 'block';
+            loadPdf();  // Load the PDF
         });
+
+        function loadPdf() {
+            // Initialize PDF.js
+            const loadingTask = pdfjsLib.getDocument(url);
+            loadingTask.promise.then(pdf => {
+                pdfDoc = pdf;
+                totalPages = pdf.numPages;
+                console.log('PDF loaded');
+                renderPage(currentPage);  // Render the first page
+            });
+        }
 
         // Render a specific page
         function renderPage(pageNum) {
             pdfDoc.getPage(pageNum).then(page => {
-                const scale = 2.0;  // Increased scale for a larger view
+                const scale = defaultScale;  // Use default scale for zoom level
                 const viewport = page.getViewport({ scale });
 
                 // Prepare canvas to render the page
